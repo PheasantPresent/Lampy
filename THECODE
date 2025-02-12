@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Website with Modules</title>
+  <style>
+    body {
+      font-family: Helvetica, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    .module {
+      margin-bottom: 30px;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+    }
+    .module h2 {
+      margin-top: 0;
+    }
+    #module1, #module2, #module3 {
+      display: inline-block;
+      vertical-align: top;
+    }
+    .input-box {
+      padding: 10px;
+      font-size: 14px;
+    }
+    #module2 textarea {
+      resize: none;
+    }
+    .btn {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-top: 10px;
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+    #module3 {
+      font-size: 60px;
+      word-wrap: break-word;
+      min-height: 80px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Module 1: Input Email -->
+  <div id="module1" class="module">
+    <h2>INPUT EMAIL</h2>
+    <input type="text" id="emailInput" class="input-box" placeholder="Enter email" style="width: 400px;">
+  </div>
+
+  <!-- Module 2: Input Text -->
+  <div id="module2" class="module">
+    <h2>INPUT TEXT</h2>
+    <textarea id="textInput" class="input-box" placeholder="Enter text (min 3 chars, max 500 chars)" style="width: 350px; height: 250px;"></textarea><br>
+    <button class="btn" onclick="submitToLampy()">Submit to Lampy</button>
+  </div>
+
+  <!-- Module 3: Display Text -->
+  <div id="module3" class="module">
+    <h2>DISPLAY TEXT</h2>
+    <div id="displayText">null</div>
+  </div>
+
+  <script>
+    // List of allowed emails for Module 1
+    const allowedEmails = ["chavalah.levy@gmail.com", "c.havalahlevy@gmail.com"];
+    
+    // Function to validate email input
+    document.getElementById("emailInput").addEventListener("input", function() {
+      const email = this.value;
+      if (!allowedEmails.includes(email)) {
+        this.setCustomValidity("Invalid email. Please enter a valid email.");
+      } else {
+        this.setCustomValidity("");
+      }
+    });
+
+    // Module 2: Submit text to local storage
+    function submitToLampy() {
+      const text = document.getElementById("textInput").value;
+      if (text.length >= 3 && text.length <= 500) {
+        let storedTexts = JSON.parse(localStorage.getItem("lampyTexts")) || [];
+        storedTexts.push(text);
+        localStorage.setItem("lampyTexts", JSON.stringify(storedTexts));
+        alert("Text submitted!");
+        document.getElementById("textInput").value = '';  // Clear input field
+      } else {
+        alert("Text must be between 3 and 500 characters long.");
+      }
+    }
+
+    // Function to display random text from Module 2
+    function displayText() {
+      const storedTexts = JSON.parse(localStorage.getItem("lampyTexts")) || [];
+      const displayDiv = document.getElementById("displayText");
+
+      if (storedTexts.length > 0) {
+        let randomIndex = Math.floor(Math.random() * storedTexts.length);
+        displayDiv.textContent = storedTexts[randomIndex];
+      } else {
+        displayDiv.textContent = "null";
+      }
+    }
+
+    // Auto-refresh display at 3 AM Pacific Time
+    function checkForAutoRefresh() {
+      const now = new Date();
+      const currentHour = now.getHours();
+      const currentMinute = now.getMinutes();
+      if (currentHour === 3 && currentMinute === 0) {
+        displayText();  // Refresh display text at 3AM
+      }
+    }
+
+    // Initial load
+    window.onload = function() {
+      displayText();  // Load the first text
+      setInterval(displayText, 5000);  // Refresh the display every 5 seconds
+      setInterval(checkForAutoRefresh, 60000);  // Check every minute if it's time to auto-refresh
+    };
+  </script>
+
+</body>
+</html>
