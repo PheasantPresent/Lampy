@@ -1,3 +1,57 @@
+<!-- Module 1: INPUT EMAIL -->
+<div id="module1">
+    <h3>INPUT EMAIL</h3>
+    <input type="email" id="emailInput" placeholder="Enter email" style="width: 400px;" oninput="checkEmailInput()" />
+    <p id="emailStatus"></p>
+</div>
+
+<!-- Module 2: INPUT TEXT -->
+<div id="module2">
+    <h3>INPUT TEXT</h3>
+    <textarea id="textInput" placeholder="Enter text (min. 3 characters, max. 500)" style="width: 350px; height: 250px;"></textarea>
+    <br />
+    <button onclick="submitText()">Submit to Lampy</button>
+</div>
+
+<script>
+    const validEmails = ['chavalah.levy@gmail.com', 'c.havalahlevy@gmail.com'];
+
+    function checkEmailInput() {
+        const email = document.getElementById('emailInput').value;
+        const status = document.getElementById('emailStatus');
+        if (validEmails.includes(email)) {
+            status.innerText = "Valid email!";
+            status.style.color = "green";
+        } else {
+            status.innerText = "Invalid email!";
+            status.style.color = "red";
+        }
+    }
+
+    function submitText() {
+        const text = document.getElementById('textInput').value;
+        if (text.length >= 3 && text.length <= 500) {
+            // Submit the text to a webhook (replace the URL with the actual webhook endpoint)
+            fetch('https://your-webhook-url.com', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email: document.getElementById('emailInput').value, text: text }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                window.location.href = 'https://www.submittolampy.uk/confirmed-submission';
+            })
+            .catch(error => console.error('Error:', error));
+        } else {
+            alert("Text must be between 3 and 500 characters long.");
+        }
+    }
+</script>
+
+
+
 <!-- Module 3: DISPLAY TEXT -->
 <div id="module3">
     <h3>DISPLAY TEXT</h3>
